@@ -17,24 +17,109 @@ def createConnection():
             host=host,
             user=user,
             password=password,
-            database=database
+            database=database,
+            auth_plugin='mysql_native_password'
         )
         return myDb
     except mysql.connector.Error as error:
-        print(colored("Error connecting to MySQL:", "red"), error)
+        print(colored("Error connecting to MySQL:", "red"), colored(error, "magenta"))
 
 # Close Connection
 def closeConnection(myDb):
     try:
         myDb.close()
     except mysql.connector.Error as error:
-        print(colored("Error closing MySQL connection:", "red"), error)
+        print(colored("Error closing MySQL connection:", "red"), colored(error, "magenta"))
+
+# Check if Table Exists
+def tableExists(tableName):
+    try:
+        myDb = createConnection()
+        cursor = myDb.cursor()
+
+        sql = "SHOW TABLES LIKE %s"
+        cursor.execute(sql, (tableName,))
+        result = cursor.fetchone()
+
+        if result:
+            return True
+        else:
+            return False
+
+        cursor.close()
+        closeConnection(myDb)
+    except mysql.connector.Error as error:
+        print(colored("Error checking if table exists:", "red"), colored(error, "magenta"))
+
+# Check if Column Exists
+def columnExists(tableName, columnName):
+    try:
+        myDb = createConnection()
+        cursor = myDb.cursor()
+
+        sql = f"SHOW COLUMNS FROM {tableName} LIKE %s"
+        cursor.execute(sql, (columnName,))
+        result = cursor.fetchone()
+
+        if result:
+            return True
+        else:
+            return False
+
+        cursor.close()
+        closeConnection(myDb)
+    except mysql.connector.Error as error:
+        print(colored("Error checking if column exists:", "red"), colored(error, "magenta"))
+
+# Create Table
+def createTable():
+    try:
+        myDb = createConnection()
+        cursor = myDb.cursor()
+
+        sql = "CREATE TABLE customers (id INT AUTO_INCREMENT PRIMARY KEY, name VARCHAR(255), address VARCHAR(255))"
+        cursor.execute(sql)
+
+        print(colored("Table created successfully.", "green"))
+
+        cursor.close()
+        closeConnection(myDb)
+    except mysql.connector.Error as error:
+        print(colored("Error creating table:", "red"), colored(error, "magenta"))
+
+# Create Column
+def createColumn(tableName, columnName, columnType):
+    try:
+        myDb = createConnection()
+        cursor = myDb.cursor()
+
+        sql = f"ALTER TABLE {tableName} ADD COLUMN {columnName} {columnType}"
+        cursor.execute(sql, (tableName, columnName, columnType))
+
+        print(colored("Column created successfully.", "green"))
+
+        cursor.close()
+        closeConnection(myDb)
+    except mysql.connector.Error as error:
+        print(colored("Error creating column:", "red"), colored(error, "magenta"))
 
 # Create Function
 def create(name, address):
     try:
         myDb = createConnection()
         cursor = myDb.cursor()
+
+        # Check if table exists, create if it doesn't
+        if not tableExists("customers"):
+            createTable()
+
+        # Check if name column exists, create if it doesn't
+        if not columnExists("customers", "name"):
+            createColumn("customers", "name", "VARCHAR(255)")
+
+        # Check if address column exists, create if it doesn't
+        if not columnExists("customers", "address"):
+            createColumn("customers", "address", "VARCHAR(255)")
 
         sql = "INSERT INTO customers (name, address) VALUES (%s, %s)"
         val = (name, address)
@@ -47,7 +132,7 @@ def create(name, address):
         cursor.close()
         closeConnection(myDb)
     except mysql.connector.Error as error:
-        print(colored("Error executing create query:", error, "red"))
+        print(colored("Error executing create query:", "red"), colored(error, "magenta"))
 
 # Read All Function
 def readAll():
@@ -65,7 +150,7 @@ def readAll():
         cursor.close()
         closeConnection(myDb)
     except mysql.connector.Error as error:
-        print(colored("Error executing readAll query:", "red"), error)
+        print(colored("Error executing readAll query:", "red"), colored(error, "magenta"))
 
 # Search By Name Function
 def searchByName(name):
@@ -83,7 +168,7 @@ def searchByName(name):
         cursor.close()
         closeConnection(myDb)
     except mysql.connector.Error as error:
-        print(colored("Error executing searchByName query:", "red"), error)
+        print(colored("Error executing searchByName query:", "red"), colored(error, "magenta"))
 
 # Update Function
 def update(oldName, newName, newAddress):
@@ -101,7 +186,7 @@ def update(oldName, newName, newAddress):
         cursor.close()
         closeConnection(myDb)
     except mysql.connector.Error as error:
-        print(colored("Error executing update query:", "red"), error)
+        print(colored("Error executing update query:", "red"), colored(error, "magenta"))
 
 # Delete Function
 def delete(name):
@@ -114,9 +199,9 @@ def delete(name):
         cursor.execute(sql, val)
         myDb.commit()
 
-        print(colored(cursor.rowcount, "record(s) deleted.", "green"))
+        print(colored(f"{cursor.rowcount} record(s) deleted.", "green"))
 
         cursor.close()
         closeConnection(myDb)
     except mysql.connector.Error as error:
-        print(colored("Error executing delete query:", "red"), error)
+        print(colored("Error executing delete query:", "red"), colored(error, "magenta"))
