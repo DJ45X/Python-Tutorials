@@ -46,10 +46,11 @@ def tableExists(tableName):
         else:
             return False
 
-        cursor.close()
-        closeConnection(myDb)
     except mysql.connector.Error as error:
         print(colored("Error checking if table exists:", "red"), colored(error, "magenta"))
+    finally:
+        cursor.close()
+        closeConnection(myDb)
 
 # Check if Column Exists
 def columnExists(tableName, columnName):
@@ -66,10 +67,11 @@ def columnExists(tableName, columnName):
         else:
             return False
 
-        cursor.close()
-        closeConnection(myDb)
     except mysql.connector.Error as error:
         print(colored("Error checking if column exists:", "red"), colored(error, "magenta"))
+    finally:
+        cursor.close()
+        closeConnection(myDb)
 
 # Create Table
 def createTable():
