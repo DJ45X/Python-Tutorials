@@ -133,6 +133,7 @@ def create(name, address):
         
         cursor.close()
         closeConnection(myDb)
+        return "Record inserted successfully"
     except mysql.connector.Error as error:
         print(colored("Error executing create query:", "red"), colored(error, "magenta"))
 
