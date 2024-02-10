@@ -1,14 +1,14 @@
-import unittest
 import mysql.connector
 from mysql.connector import Error
 from dotenv import load_dotenv
 import os
 from dbUtils import create, delete
+import pytest
 
 load_dotenv()
 
-class TestMySQLConnection(unittest.TestCase):
-    def setUp(self):
+class TestMySQLConnection(object):
+    def __init__(self):
         self.host = os.getenv("DB_HOST")
         self.user = os.getenv("DB_USER")
         self.password = os.getenv("DB_PASSWORD")
@@ -29,22 +29,23 @@ class TestMySQLConnection(unittest.TestCase):
             myDb.close()
         except Error as e:
             print(f"Error: '{e}'")
-            self.fail()
+            pytest.fail()
 
-class TestCreateFunction(unittest.TestCase):
+class TestCreateFunction(object):
+    def __init__(self):
+        self.name = "Test_Name"
+        self.address = "Test_Address"
+
     def test_create(self):
         try:
-            self.name = "Test_Name"
-            self.address = "Test_Address"
             result = create(self.name, self.address)
-            self.assertEqual(result, "Record inserted successfully")
-                
+            assert result == "Record inserted successfully"
         except Error as e:
             print(f"Error: '{e}'")
-            self.fail()
+            pytest.fail()
 
-    def tearDown(self):
+    def __del__(self):
         delete(self.name)
 
 if __name__ == "__main__":
-    unittest.main()
+    pytest.main()
