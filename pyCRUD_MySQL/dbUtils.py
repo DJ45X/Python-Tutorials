@@ -11,6 +11,7 @@ def createConnection():
     user = os.getenv("DB_USER")
     password = os.getenv("DB_PASSWORD")
     database = os.getenv("DB_DATABASE")
+    port = os.getenv("DB_PORT")
 
     try:
         myDb = mysql.connector.connect(
@@ -18,6 +19,7 @@ def createConnection():
             user=user,
             password=password,
             database=database,
+            port=port,
             auth_plugin='mysql_native_password'
         )
         return myDb
