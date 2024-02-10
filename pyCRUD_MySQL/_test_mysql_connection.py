@@ -13,6 +13,7 @@ class TestMySQLConnection(unittest.TestCase):
         self.user = os.getenv("DB_USER")
         self.password = os.getenv("DB_PASSWORD")
         self.database = os.getenv("DB_DATABASE")
+        self.port = os.getenv("DB_PORT")
 
     def test_connection(self):
         try:
@@ -21,6 +22,7 @@ class TestMySQLConnection(unittest.TestCase):
                 user=self.user,
                 password=self.password,
                 database=self.database,
+                port=self.port,
                 auth_plugin='mysql_native_password'
             )
             assert myDb.is_connected()
