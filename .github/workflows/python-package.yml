@@ -34,4 +34,4 @@ jobs:
               run: python -m pip install pytest
 
             - name: Run Tests
-              run: pytest ./Python-Tutorials/pyCRUD_MySQL/_test_mysql_connection.py
+              run: pytest test_mysql_connection.py
