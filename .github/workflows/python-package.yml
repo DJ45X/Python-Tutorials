@@ -29,4 +29,4 @@ jobs:
         pip install -r .github/workflows/requirements.txt
     - name: Run Tests
       run: |
-        python ./Python-Tutorials/pyCRUD_MySQL/_test_mysql_connection.py
+        python _test_mysql_connection.py
